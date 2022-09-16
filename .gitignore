@@ -1,0 +1,10 @@
+# Env config
+.env
+.secret
+
+# VSCode
+.vscode
+
+# Notes & Diagrams
+NOTES.md
+*.png
