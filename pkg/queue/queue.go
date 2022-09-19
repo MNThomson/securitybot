@@ -2,14 +2,14 @@ package queue
 
 import (
 	"github.com/MNThomson/securitybot/pkg/queue/sqs"
-	AWSremoveSQS "github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/MNThomson/securitybot/pkg/types"
 )
 
 func Init() {
 	sqs.InitSQS()
 }
 
-func PollMessages(chn chan<- *AWSremoveSQS.Message, MaxNumberOfMessages int64) {
+func PollMessages(chn chan<- types.AlertType, MaxNumberOfMessages int64) {
 	sqs.PollMessages(chn, MaxNumberOfMessages)
 }
 

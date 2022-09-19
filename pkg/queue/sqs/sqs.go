@@ -1,10 +1,11 @@
 package sqs
 
 import (
-	"fmt"
-
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
+	log "github.com/sirupsen/logrus"
+
+	"github.com/MNThomson/securitybot/pkg/types"
 )
 
 var (
@@ -28,7 +29,7 @@ func getQueueURL(sess *session.Session, queue *string) (*sqs.GetQueueUrlOutput, 
 	return urlResult, nil
 }
 
-func PollMessages(chn chan<- *sqs.Message, MaxNumberOfMessages int64) {
+func PollMessages(chn chan<- types.AlertType, MaxNumberOfMessages int64) {
 
 	for {
 		output, err := sqsSvc.ReceiveMessage(&sqs.ReceiveMessageInput{
@@ -37,11 +38,20 @@ func PollMessages(chn chan<- *sqs.Message, MaxNumberOfMessages int64) {
 			WaitTimeSeconds:     &WaitTimeSeconds,
 		})
 		if err != nil {
-			fmt.Printf("failed to fetch sqs message %v", err)
+			log.Errorf("failed to fetch sqs message %v", err)
 		}
 
 		for _, message := range output.Messages {
-			chn <- message
+			log.Info(message)
+			data := types.AlertType{
+				ID:          "c64653f3",
+				AlertNumber: 2140,
+				OccuredAt:   "Funky-Time",
+				Actor:       "TestUser@example.com",
+				Action:      "Cmd: sudo su",
+				Info:        "Server: Bastion-1",
+			}
+			chn <- data
 		}
 	}
 }
@@ -89,7 +99,7 @@ func InitSQS() {
 	// Get URL of queue
 	urlResult, err := getQueueURL(sess, &queue)
 	if err != nil {
-		fmt.Println("Got an error getting the queue URL:", err)
+		log.Errorf("Got an error getting the queue URL:", err)
 		return
 	}
 

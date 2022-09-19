@@ -1,7 +1,12 @@
 package types
 
 type AlertType struct {
-	ID   string
-	User string
-	Msg  string
+	ID            string
+	OccuredAt     string
+	ReceiptHandle string
+
+	AlertNumber int64
+	Actor       string
+	Action      string
+	Info        string
 }

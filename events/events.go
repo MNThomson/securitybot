@@ -1,10 +1,9 @@
 package events
 
 import (
-	"fmt"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/MNThomson/securitybot/pkg/queue"
-	log "github.com/sirupsen/logrus"
 )
 
 func InitEvents() {
@@ -18,5 +17,5 @@ func InitEvents() {
 		return
 	}
 
-	fmt.Println("Sent message to queue ")
+	log.Debug("Sent message to queue")
 }

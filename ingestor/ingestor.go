@@ -1,32 +1,32 @@
 package ingestor
 
 import (
-	"fmt"
+	log "github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 
 	"github.com/MNThomson/securitybot/pkg/queue"
-	AWSremoveSQS "github.com/aws/aws-sdk-go/service/sqs"
-	log "github.com/sirupsen/logrus"
+	"github.com/MNThomson/securitybot/pkg/types"
 )
 
 const (
 	MaxNumberOfMessages int64 = 10
 )
 
-func handleMessage(msg *AWSremoveSQS.Message) {
-	fmt.Println("RECEIVING MESSAGE >>> ")
-	fmt.Println(*msg.Body)
+func handleMessage(alert types.AlertType) {
+	log.Debug("RECEIVING MESSAGE >>> ")
+	log.Debug(alert.Info)
 }
 
-func Ingestor() {
+func Ingestor(db *gorm.DB) {
 	queue.Init()
 
-	chnMessages := make(chan *AWSremoveSQS.Message, MaxNumberOfMessages)
-	go queue.PollMessages(chnMessages, MaxNumberOfMessages)
+	chnAlerts := make(chan types.AlertType, MaxNumberOfMessages)
+	go queue.PollMessages(chnAlerts, MaxNumberOfMessages)
 
-	for message := range chnMessages {
-		handleMessage(message)
+	for alert := range chnAlerts {
+		handleMessage(alert)
 
-		if err := queue.DeleteMessage(*message.ReceiptHandle); err != nil {
+		if err := queue.DeleteMessage(alert.ReceiptHandle); err != nil {
 			log.Errorf("failed to delete message %s", err)
 		}
 	}
